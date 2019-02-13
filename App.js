@@ -17,13 +17,13 @@ export default class App extends React.Component {
           <TextInput 
             style={styles.input} 
             placeholder={'New To Do'} 
-            value={this.newToDo} 
+            value={this.newToDo} // 또는 const { newToDo } = this.state; 로 따로 선언해도 됨.
             onChangeText={this._constrolNewToDo}
             placeholderTextColor={'#999'}
             returnKeyType={'done'}
             autoCorrect={false}
             />
-            <ScrollView>
+            <ScrollView contentContainerStyle={styles.toDos}> 
               <ToDo />
             </ScrollView>
         </View>
@@ -78,5 +78,8 @@ const styles = StyleSheet.create({
     borderBottomColor: '#bbb',
     borderBottomWidth: 1,
     fontSize: 25,
-  },  
+  },
+  toDos: {
+    alignItems: 'center',
+  }
 });
