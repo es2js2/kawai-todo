@@ -1,11 +1,12 @@
 import React from 'react';
-import { StyleSheet, Text, View, StatusBar, Dimensions, Platform, TextInput } from 'react-native';
+import { StyleSheet, Text, View, StatusBar, Dimensions, Platform, TextInput, ScrollView } from 'react-native';
+import ToDo from './ToDo';
 
 const { height, width } = Dimensions.get('window');
 
 export default class App extends React.Component {
   state = {
-    NewToDo: '',
+    newToDo: '',
   };
   render() {
     return (
@@ -16,19 +17,23 @@ export default class App extends React.Component {
           <TextInput 
             style={styles.input} 
             placeholder={'New To Do'} 
-            value={newTodo} 
+            value={this.newToDo} 
             onChangeText={this._constrolNewToDo}
             placeholderTextColor={'#999'}
             returnKeyType={'done'}
-            autoCorrect={flase}
+            autoCorrect={false}
             />
+            <ScrollView>
+              <ToDo />
+            </ScrollView>
         </View>
       </View>
     );
-  };
+  }
+
   _constrolNewToDo = text => {
     this.setState({
-      newTodo: text
+      newToDo: text
     });
   }
 }
