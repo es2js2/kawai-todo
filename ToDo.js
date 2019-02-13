@@ -23,7 +23,7 @@ export default class ToDo extends Component {
           isCompleted ? styles.completedCircle : styles.uncompletedCircle
           ]} />
       </TouchableOpacity>
-      <Text style={[styles.text, isCompleted ? styles.completedText : styles.uncompletedText]}>안녕하세요!!</Text>
+      <Text style={[styles.text, isCompleted ? styles.completedText : styles.uncompletedText]}>안녕하세요!!!</Text>
     </View>
     );
   };
