@@ -23,7 +23,8 @@ export default class ToDo extends Component {
     id: PropTypes.string.isRequired,
     deleteToDo: PropTypes.func.isRequired,
     uncompleteToDo: PropTypes.func.isRequired,
-    completeToDo: PropTypes.func.isRequired
+    completeToDo: PropTypes.func.isRequired,
+    updateToDo: PropTypes.func.isRequired
   };
 
   render() {
@@ -71,6 +72,7 @@ export default class ToDo extends Component {
 
         {isEditing ? (
           <View style={styles.actions}>
+            {/* 확인(체크) */}
             <TouchableOpacity onPressOut={this._finishEditing}>
               <View style={styles.actionsContainer}>
                 <Text style={styles.actionText}>&#x2714;</Text>
@@ -86,7 +88,12 @@ export default class ToDo extends Component {
               </View>
             </TouchableOpacity>
             {/* 삭제 */}
-            <TouchableOpacity onPressOut={() => deleteToDo(id)}>
+            <TouchableOpacity
+              onPressOut={event => {
+                event.stopPropagation;
+                deleteToDo(id);
+              }}
+            >
               <View style={styles.actionContainer}>
                 <Text style={styles.actionText}>&#x274C;</Text>
               </View>
@@ -97,7 +104,8 @@ export default class ToDo extends Component {
     );
   }
 
-  _toggleComplete = () => {
+  _toggleComplete = event => {
+    event.stopPropagation();
     const { isCompleted, uncompleteToDo, completeToDo, id } = this.props;
     if (isCompleted) {
       uncompleteToDo(id);
@@ -111,7 +119,8 @@ export default class ToDo extends Component {
     // });
   };
 
-  _startEditing = () => {
+  _startEditing = event => {
+    event.stopPropagation();
     // const { text } = this.props;
     this.setState({
       isEditing: true
@@ -119,7 +128,11 @@ export default class ToDo extends Component {
     });
   };
 
-  _finishEditing = () => {
+  _finishEditing = event => {
+    event.stopPropagation();
+    const { toDoValue } = this.state;
+    const { id, updateToDo } = this.props;
+    updateToDo(id, toDoValue);
     this.setState({
       isEditing: false
     });

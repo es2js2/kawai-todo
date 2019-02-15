@@ -7,7 +7,8 @@ import {
   Dimensions,
   Platform,
   TextInput,
-  ScrollView
+  ScrollView,
+  AsyncStorage
 } from "react-native";
 import { AppLoading } from "expo";
 import uuidv1 from "uuid/v1";
@@ -28,7 +29,7 @@ export default class App extends React.Component {
 
   render() {
     const { newToDo, loadedToDos, toDos } = this.state;
-    console.log(toDos);
+    // console.log(toDos);
 
     if (!loadedToDos) {
       return <AppLoading />;
@@ -51,16 +52,19 @@ export default class App extends React.Component {
           />
           <ScrollView contentContainerStyle={styles.toDos}>
             {/* <ToDo text={"Hello"} /> */}
-            {Object.values(toDos).map(toDo => (
-              <ToDo
-                key={toDo.id}
-                {...toDo}
-                deleteToDo={this._deleteToDo}
-                uncompleteToDo={this._uncompleteToDo}
-                completeToDo={this._completeToDo}
-                {...toDo}
-              />
-            ))}
+            {Object.values(toDos)
+              .reverse()
+              .map(toDo => (
+                <ToDo
+                  key={toDo.id}
+                  {...toDo}
+                  deleteToDo={this._deleteToDo}
+                  uncompleteToDo={this._uncompleteToDo}
+                  completeToDo={this._completeToDo}
+                  updateToDo={this._updateToDo}
+                  {...toDo}
+                />
+              ))}
           </ScrollView>
         </View>
       </View>
@@ -73,10 +77,19 @@ export default class App extends React.Component {
     });
   };
 
-  _loadToDos = () => {
-    this.setState({
-      loadedToDos: true
-    });
+  _loadToDos = async () => {
+    // async를 안 쓰면 아이템 가져오기를 기다리지 않으므로 에러가 생길 수 있음
+    try {
+      const toDos = await AsyncStorage.getItem("toDos");
+      const parsedToDos = JSON.parse(toDos);
+      // console.log(toDos);
+      this.setState({
+        loadedToDos: true,
+        toDos: parsedToDos
+      });
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   _addToDo = () => {
@@ -107,7 +120,7 @@ export default class App extends React.Component {
             ...newToDoObject
           }
         };
-
+        this._saveToDos(newState.toDos);
         return { ...newState };
       });
       // const toDos = {
@@ -141,6 +154,7 @@ export default class App extends React.Component {
         ...prevState,
         ...toDos
       };
+      this._saveToDos(newState.toDos);
       return { ...newState };
     });
   };
@@ -157,6 +171,7 @@ export default class App extends React.Component {
           }
         }
       };
+      this._saveToDos(newState.toDos);
       return { ...newState };
     });
   };
@@ -173,8 +188,31 @@ export default class App extends React.Component {
           }
         }
       };
+      this._saveToDos(newState.toDos);
       return { ...newState };
     });
+  };
+
+  _updateToDo = (id, text) => {
+    this.setState(prevState => {
+      const newState = {
+        ...prevState,
+        toDos: {
+          ...prevState.toDos,
+          [id]: {
+            ...prevState.toDos[id],
+            text: text
+          }
+        }
+      };
+      this._saveToDos(newState.toDos);
+      return { ...newState };
+    });
+  };
+
+  _saveToDos = newToDos => {
+    // console.log(JSON.stringify(newToDos));
+    const saveToDos = AsyncStorage.setItem("toDos", JSON.stringify(newToDos)); // AsyncStorage는 string만 저장 가능하므로 json으로 변환
   };
 }
 
